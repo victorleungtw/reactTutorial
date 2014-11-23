@@ -7,13 +7,14 @@ var boxStyle = {
 
 var Box = React.createClass({
   handleClick: function(){
-    this.props.handleClick(this.props.index);
+    this.props.handleClick(this.props.rowIndex);
   },
   render: function(){
     return (
       <button
+        style={boxStyle}
         onClick={this.handleClick}
-        style={boxStyle}>
+      >
         {this.props.value}
       </button>
     );
@@ -21,38 +22,59 @@ var Box = React.createClass({
 });
 
 var Row = React.createClass({
-  getInitialState: function(){
-    return {
-      boxValues: ['-', '-', '-'],
-      clicks: 0
-    }
-  },
-  handleClick: function(index){
-    var boxValues = this.state.boxValues;
-    var clicks = this.state.clicks;
-    boxValues[index] = clicks % 2 ? 'X' : 'O';
-    this.setState({
-      clicks: clicks + 1,
-      boxValues: boxValues
-    });
+  handleClick: function(rowIndex){
+    this.props.handleClick(this.props.boardIndex, rowIndex);
   },
   render: function(){
-    var cBoxes = this.state.boxValues.map(function(value, index){
+    var boxes = this.props.rowValues.map(function(value, index){
       return (
-        <Box
-          handleClick={this.handleClick}
-          value={value}
-          key={index}
-          index={index}
-        />
+        <Box value={value} key={index} rowIndex={index} handleClick={this.handleClick}/>
       );
     }.bind(this));
     return (
       <div>
-        {cBoxes}
+        {boxes}
       </div>
     );
   }
-})
+});
 
-React.render(<Row/>, document.body);
+var Board = React.createClass({
+  getInitialState: function(){
+    return {
+      clicks: 0,
+      boardValues: [
+        ['-', '-', '-'],
+        ['-', '-', '-'],
+        ['-', '-', '-']
+      ]
+    };
+  },
+  handleClick: function(boardIndex, rowIndex){
+    var boardValues = this.state.boardValues;
+    var newValue = 'X';
+    if(this.state.clicks % 2 === 0){
+      newValue = 'O';
+    }
+    boardValues[boardIndex][rowIndex] = newValue;
+    this.setState({
+      clicks: this.state.clicks + 1,
+      boardValues: this.state.boardValues
+    });
+  },
+  render: function(){
+    var rows = this.state.boardValues.map(function(row, index){
+      return (
+        <Row key={index} rowValues={row} boardIndex={index} handleClick={this.handleClick}/>
+      )
+    }.bind(this));
+    return (
+      <div>
+        {rows}
+      </div>
+    );
+  }
+});
+
+
+React.render(<Board/>, document.body);
