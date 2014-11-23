@@ -6,45 +6,35 @@ var boxStyle = {
 };
 
 var Box = React.createClass({
-  getInitialState: function(){
-    return {
-      value: 'X'
-    }
-  },
-
-  handleClick : function(){
-    var value = this.state.value;
-    value = value === 'X' ? 'O' : 'X';
-    this.setState({
-      value: value
-    });
-  },
-
   render: function(){
     return (
       <button
-        onClick={this.handleClick}
         style={boxStyle}>
-        {this.state.value}
+        {this.props.value}
       </button>
     );
   }
 });
 
-React.render(<Box/>, document.body);
+var Row = React.createClass({
+  getInitialState: function(){
+    return {
+      boxValues: ['-', '-', '-'],
+      clicks: 0
+    }
+  },
+  render: function(){
+    var cBoxes = this.state.boxValues.map(function(value, index){
+      return (
+        <Box value={value} key={index} index={index}/>
+      );
+    });
+    return (
+      <div>
+        {cBoxes}
+      </div>
+    );
+  }
+})
 
-
-
-  // componentWillMount: function(){
-  //   this.timer = setInterval(function(){
-  //     var value = this.state.value;
-  //     value = value === "X" ? "O": "X";
-  //     this.setState({
-  //       value: value
-  //     });
-  //   }.bind(this), 300);
-  // },
-
-  // componentWillUnmount: function(){
-  //   clearInterval(this.timer);
-  // },
+React.render(<Row/>, document.body);
